@@ -1,6 +1,7 @@
 <template>
   <div id="app">
-    <h1>Welcome</h1>
+    <DateInfo />
+    <WeatherInfo />
     <SearchBar />
     <LinksWrapper v-bind:links="links"/>
   </div>
@@ -9,6 +10,8 @@
 <script>
 import LinksWrapper from './components/links-wrapper'
 import SearchBar from './components/search-bar'
+import WeatherInfo from './components/weather-info'
+import DateInfo from './components/date-info'
 export default {
   name: 'App',
   data: function(){
@@ -36,7 +39,9 @@ export default {
   },
   components: {
     LinksWrapper,
-    SearchBar
+    SearchBar,
+    WeatherInfo,
+    DateInfo
   }
 }
 </script>

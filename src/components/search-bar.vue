@@ -1,6 +1,6 @@
 <template>
     <div class="search-container">
-        <input type="text" v-model="query" v-on:keyup.down="increaseActive" v-on:keyup.up="decreaseActive" v-on:click="toggleActive" v-on:keyup.enter="searchHandler">
+        <input autofocus type="text" v-model="query" v-on:keyup.down="increaseActive" v-on:keyup.up="decreaseActive" v-on:click="toggleActive" v-on:keyup.enter="searchHandler">
         <div class="suggestions" v-if="suggestions.length > 0">
             <p v-for="suggestion in suggestions" v-bind:key="suggestion.id" v-bind:class='{"active-suggestion": suggestion.id == activeSuggestion}'>{{suggestion.phrase}}</p>
         </div>
@@ -43,7 +43,10 @@ export default {
             }
         },
         searchHandler () {
-            let urlRegex = /([\w-://])?[\w-]?.\w/;
+            //TODO: Figure out this regex, maybe it's just a matter of disabling the 
+            //default linter settings because valid regexes are not being accepted
+            // let urlRegex = /([\w-://])?[\w-]?.\w/;
+            let urlRegex = /.com/;
             if(this.activeSuggestion < 0){
                 let link = this.query
                 if(urlRegex.test(link)){
@@ -96,9 +99,16 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
     .active-suggestion {
         color: blue;
         font-size: 1.2em;
+    }
+
+    input{
+        border-radius: 0;
+    }
+    input:focus{
+        outline: none;
     }
 </style>
