@@ -1,28 +1,50 @@
 <template>
   <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+    <h1>Welcome</h1>
+    <SearchBar />
+    <LinksWrapper v-bind:links="links"/>
   </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
-
+import LinksWrapper from './components/links-wrapper'
+import SearchBar from './components/search-bar'
 export default {
   name: 'App',
+  data: function(){
+    return {
+      links: [
+        {
+          id: 0,
+          name:'Reddit',
+          address:'https://www.reddit.com/',
+        },
+        {
+          id: 1,
+          name: 'Gmail',
+          address: 'https://www.mail.google.com',
+        },
+        {
+          id: 2,
+          name: 'Youtube',
+          address: 'https://www.youtube.com/feed/subscriptions',
+        }
+      ]
+    };
+  },
+  computed: {
+  },
   components: {
-    HelloWorld
+    LinksWrapper,
+    SearchBar
   }
 }
 </script>
 
 <style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
+  * {
+    margin: 0;
+    padding: 0;
+    font-family: Helvetica, Arial, sans-serif;
+  }
 </style>
