@@ -22,7 +22,7 @@ export default {
         {
           id: 1,
           name: 'Gmail',
-          address: 'https://www.mail.google.com',
+          address: 'https://mail.google.com/mail/u/0/#inbox',
         },
         {
           id: 2,

@@ -1,6 +1,6 @@
 <template>
     <div class="search-container">
-        <input type="text" v-model="query" v-on:keyup.down="increaseActive" v-on:keyup.up="decreaseActive">
+        <input type="text" v-model="query" v-on:keyup.down="increaseActive" v-on:keyup.up="decreaseActive" v-on:click="toggleActive" v-on:keyup.enter="searchHandler">
         <div class="suggestions" v-if="suggestions.length > 0">
             <p v-for="suggestion in suggestions" v-bind:key="suggestion.id" v-bind:class='{"active-suggestion": suggestion.id == activeSuggestion}'>{{suggestion.phrase}}</p>
         </div>
@@ -15,6 +15,7 @@ export default {
             query: '',
             acUrl: 'https://ac.duckduckgo.com/ac/',
             proxyUrl: 'https://cors-anywhere.herokuapp.com/',
+            searchUrl: 'https://www.google.com/search?q=',
             suggestions: [],
             activeSuggestion: -1,
         }
@@ -35,6 +36,35 @@ export default {
             } else {
                 this.activeSuggestion = 0;
             }
+        },
+        toggleActive () {
+            if(this.activeSuggestion >= 0){
+                this.activeSuggestion = -1;
+            }
+        },
+        searchHandler () {
+            let urlRegex = /([\w-://])?[\w-]?.\w/;
+            if(this.activeSuggestion < 0){
+                let link = this.query
+                if(urlRegex.test(link)){
+                    window.location.assign(link);
+                } else {
+                    window.location.assign(this.searchUrl + this.searchableQuery);
+                }
+            } else {
+                let link = this.suggestions[this.activeSuggestion].phrase;
+                if(urlRegex.test(link)){
+                    window.location.assign(link);
+                } else {
+                    window.location.assign(this.searchUrl + link);
+                } 
+            }
+            this.query = '';
+        }
+    },
+    computed: {
+        searchableQuery: function() {
+            return this.query.split(' ').join('+');
         }
     },
     watch: {
@@ -42,7 +72,7 @@ export default {
             if(this.query.length < 1){
                 this.suggestions = [];
             }
-            const suggUrl = this.acUrl + '?q=' + this.query.split(' ').join('+');
+            const suggUrl = this.acUrl + '?q=' + this.searchableQuery;
             const res = await fetch(this.proxyUrl + suggUrl);
             const data = await res.json();
 
@@ -53,7 +83,15 @@ export default {
             });
 
             this.suggestions = data;
-        }
+        },
+        // TODO: maybe figure out how to implement something like this to fully replicate chrome's bar
+        // right now the problem is that it activates the above and corrupts the current list by running the
+        // api on each guy that it runs through 
+        // activeSuggestion: function(){
+        //     if(this.activeSuggestion >= 0){
+        //         this.query = this.suggestions[this.activeSuggestion].phrase;
+        //     }
+        // }
     }
 }
 </script>
