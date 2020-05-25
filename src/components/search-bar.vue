@@ -1,3 +1,4 @@
+/* eslint disable no-invalid-regexp */
 <template>
     <div class="search-container">
         <input autofocus type="text" v-model="query" v-on:keyup.down="increaseActive" v-on:keyup.up="decreaseActive" v-on:click="toggleActive" v-on:keyup.enter="searchHandler">
@@ -18,6 +19,8 @@ export default {
             searchUrl: 'https://www.google.com/search?q=',
             suggestions: [],
             activeSuggestion: -1,
+            urlRegex: /^(([\w-]+?:\/\/)?[\w-]+(\.?[\w-]+)+\.?(:\d+)?(\/\S*)?)$/,
+            protocolRegex: /^http(s):\/\//
         }
     },
     methods: {
@@ -43,20 +46,22 @@ export default {
             }
         },
         searchHandler () {
-            //TODO: Figure out this regex, maybe it's just a matter of disabling the 
-            //default linter settings because valid regexes are not being accepted
-            // let urlRegex = /([\w-://])?[\w-]?.\w/;
-            let urlRegex = /.com/;
             if(this.activeSuggestion < 0){
                 let link = this.query
-                if(urlRegex.test(link)){
+                if(this.urlRegex.test(link)){
+                    if(!this.protocolRegex.test(link)){
+                        link = 'http://' + link;
+                    }
                     window.location.assign(link);
                 } else {
                     window.location.assign(this.searchUrl + this.searchableQuery);
                 }
             } else {
                 let link = this.suggestions[this.activeSuggestion].phrase;
-                if(urlRegex.test(link)){
+                if(this.urlRegex.test(link)){
+                    if(!this.protocolRegex.test(link)){
+                        link = 'http://' + link;
+                    }
                     window.location.assign(link);
                 } else {
                     window.location.assign(this.searchUrl + link);
