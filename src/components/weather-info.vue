@@ -1,7 +1,7 @@
 <template>
     <div v-on:click="getWeather">
         <p>Weather:</p>
-        <!-- {{ weather.currently.apparentTemperature }} -->
+        <p v-if="weather.currently"> {{ weather.currently.summary }} Feels like {{ Math.round(weather.currently.apparentTemperature) }} F </p>
     </div>
 </template>
 
@@ -19,11 +19,11 @@ export default {
     },
     methods: {
         async getLocation() {
-            // const request = await fetch(this.locUrl); 
-            // const data = await request.text();
+            const request = await fetch(this.locUrl); 
+            const data = await request.text();
             // console.log(data);
-            // return data;
-            return ('41.8500,-87.6500');
+            return data;
+            // return ('41.8500,-87.6500');
         },
         async getWeather() {
             let coords = await this.getLocation(); 
@@ -36,14 +36,15 @@ export default {
             });
             const data = await request.json();
             this.weather = data;
-            console.log(data);
-            setTimeout(this.getWeather(), 60000);
         }
     },
-    // beforeCreated() {
-        // this.getWeather();
-        // this.interval = setInterval(() => this.getWeather(), 60000);
-    // }
+    mounted() {
+        this.getWeather();
+        this.interval = setInterval(this.getWeather, 900000);
+    },
+    beforeDestroy() {
+        clearInterval(this.interval);
+    }
 }
 </script>
 

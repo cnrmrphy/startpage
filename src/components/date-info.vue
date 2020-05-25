@@ -40,12 +40,10 @@ export default {
                 this.getDate();
             }
         },
-        time() {
-            this.datenow = new Date();
-        }
     },
     mounted() {
         this.getDate();
+        this.getTime();
         this.interval = setInterval(this.getTime, 1000);
     },
     beforeDestroy() {
