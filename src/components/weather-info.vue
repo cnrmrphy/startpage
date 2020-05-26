@@ -21,14 +21,20 @@ export default {
     },
     methods: {
         async getLocation() {
-            const request = await fetch(this.apiUrl); 
+            /* deployed site get location */
+            const request = await fetch(this.locUrl);
             const data = await request.text();
-            // var data = '41.8500,-87.6500'; 
             this.lat = parseInt(data.split(',')[0]).toFixed(2);
-            this.lon = parseInt(data.split(',')[1]).toFixed(2);
-            // this.lat = parseInt(response.latitude).toFixed(2);
-            // this.lon = parseInt(response.longitude).toFixed(2);
-            console.log('lat/long: ' + this.lat + '/' + this.lon);
+            this.lon = parseInt(data.split(',')[1]).toFixed(2); 
+
+            /* offline get location */
+            // const request = await fetch(this.apiUrl); 
+            // const data = await request.json();
+            // this.lat = parseInt(data.latitude).toFixed(2);
+            // this.lon = parseInt(data.longitude).toFixed(2);
+
+
+            this.getWeather();
         },
         async getWeather() {
             const VUE_APP_WEATHER_KEY = process.env.VUE_APP_WEATHER_KEY;
@@ -64,7 +70,6 @@ export default {
     },
     mounted() {
         this.getLocation();
-        this.getWeather();
         this.interval = setInterval(this.getWeather, 900000);
     },
     beforeDestroy() {
