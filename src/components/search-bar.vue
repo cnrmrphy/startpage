@@ -19,7 +19,7 @@ export default {
             searchUrl: 'https://www.google.com/search?q=',
             suggestions: [],
             activeSuggestion: -1,
-            urlRegex: /^(([\w-]+?:\/\/)?[\w-]+(\.?[\w-]+)+\.(:\d+)?(\/\S*)?)$/,
+            urlRegex: /^(([\w-]+?:\/\/)?[\w-]+(\.[\w-]+)+\.?(:\d+)?(\/\S*)?)$/,
             protocolRegex: /^http(s):\/\//
         }
     },
@@ -46,6 +46,7 @@ export default {
             }
         },
         searchHandler () {
+            this.storeQuery(this.activeSuggestion < 0 ? this.query : this.suggestions[this.activeSuggestion].phrase);
             if(this.activeSuggestion < 0){
                 let link = this.query
                 if(this.urlRegex.test(link)){
@@ -69,6 +70,22 @@ export default {
             }
             this.query = '';
         },
+        storeQuery (query) {
+            let queryData = JSON.parse(localStorage.getItem(query));
+            if(queryData){
+                queryData.num ++;
+                localStorage.setItem(query, JSON.stringify(queryData));
+            } else { 
+                let time = new Date();
+                time = time.getTime();
+                let options = {
+                    'time': time,
+                    'num': 1
+                }
+                localStorage.setItem(query, JSON.stringify(options));
+            }
+            
+        }
     },
     computed: {
         searchableQuery: function() {
