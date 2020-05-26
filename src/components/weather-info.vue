@@ -10,7 +10,7 @@ export default {
     data: function() {
         return {
             locUrl: 'https://ipinfo.io/loc',
-            apiUrl: 'http://free.ipwhois.io/json/',
+            apiUrl: 'http://free.ipwhois.io/json/?objects=latitude,longitude',
             weatherUrl: 'https://api.openweathermap.org/data/2.5/weather',
             lat: '',
             lon: '',
@@ -21,13 +21,14 @@ export default {
     },
     methods: {
         async getLocation() {
-            const request = await fetch(this.locUrl); 
+            const request = await fetch(this.apiUrl); 
             const data = await request.text();
             // var data = '41.8500,-87.6500'; 
             this.lat = parseInt(data.split(',')[0]).toFixed(2);
             this.lon = parseInt(data.split(',')[1]).toFixed(2);
             // this.lat = parseInt(response.latitude).toFixed(2);
             // this.lon = parseInt(response.longitude).toFixed(2);
+            console.log('lat/long: ' + this.lat + '/' + this.lon);
         },
         async getWeather() {
             const VUE_APP_WEATHER_KEY = process.env.VUE_APP_WEATHER_KEY;
@@ -39,6 +40,7 @@ export default {
                 }
             });
             const data = await request.json();
+            console.log(data);
             this.weather = data;
             this.handleWeather(this.weather);
         },
