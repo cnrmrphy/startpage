@@ -21,15 +21,20 @@ export default {
     },
     methods: {
         async getLocation() {
-            // const request = await fetch(this.locUrl); 
-            // const data = await request.text();
-            const request = await fetch(this.apiUrl);
-            const response = await request.json();
+            const request = await fetch(this.locUrl); 
+            const data = await request.text();
+            // const request = await fetch(this.apiUrl);
+            // const response = await request.json();
             // console.log(response);
             // console.log(parseInt(response.latitude).toFixed(2));
-            // var data = '41.8500,-87.6500'; 
-            this.lat = parseInt(response.latitude).toFixed(2);
-            this.lon = parseInt(response.longitude).toFixed(2);
+            console.log(data);
+            // var cum = '41.8500,-87.6500'; 
+            // console.log(data)
+            // console.log(cum.split(','))
+            this.lat = parseInt(data.split(',')[0]).toFixed(2);
+            this.lon = parseInt(data.split(',')[1]).toFixed(2);
+            // this.lat = parseInt(response.latitude).toFixed(2);
+            // this.lon = parseInt(response.longitude).toFixed(2);
             this.getWeather();
         },
         async getWeather() {
