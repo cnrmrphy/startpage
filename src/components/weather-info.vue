@@ -1,6 +1,6 @@
 <template>
     <div>
-        <p v-if="weather.currently"> {{ weather.currently.summary }} Feels like {{ Math.round(weather.currently.apparentTemperature) }} F </p>
+        <p> {{ conditions }}–Feels like {{ temp }} F </p>
     </div>
 </template>
 
@@ -10,32 +10,51 @@ export default {
     data: function() {
         return {
             locUrl: 'https://ipinfo.io/loc',
-            weatherUrl: 'https://darksky.net/forecast/',
-            weatherParams: '/us12/en.json',
-            proxyUrl: 'https://cors-anywhere.herokuapp.com/',
-            coords: '',
-            weather: {}
+            weatherUrl: 'https://api.openweathermap.org/data/2.5/weather',
+            lat: '',
+            lon: '',
+            weather: {},
+            temp: '',
+            conditions: ''
         }
     },
     methods: {
         async getLocation() {
             const request = await fetch(this.locUrl); 
             const data = await request.text();
-            console.log(data);
-            this.coords = data;
-            // this.coords = '41.8500,-87.6500';
+            // var data = '41.8500,-87.6500'; 
+            this.lat = parseInt(data.split(',')[0]).toFixed(2);
+            this.lon = parseInt(data.split(',')[1]).toFixed(2);
         },
         async getWeather() {
-            let requestUrl = this.proxyUrl + this.weatherUrl + this.coords + this.weatherParams;
-            // let requestUrl = this.weatherUrl + this.coords + this.weatherParams;
+            const VUE_APP_WEATHER_KEY = process.env.VUE_APP_WEATHER_KEY;
+            console.log('Weather key: ' + VUE_APP_WEATHER_KEY);
+            let requestUrl = this.weatherUrl + '?lat=' + this.lat + '&lon=' + this.lon + '&appid=' + VUE_APP_WEATHER_KEY;
             const request = await fetch(requestUrl, {
                 headers: {
                     "origin": "startpage.cmurph.me",
                 }
             });
             const data = await request.json();
-            // console.log(await request.text());
             this.weather = data;
+            this.handleWeather(this.weather);
+        },
+        toFahrenheit(kelvin) {
+            var temp = (kelvin - 273.15) * (9/5) + 32;
+            return Math.round(temp);
+        },
+        handleWeather(weather) {
+            this.temp = this.toFahrenheit(weather.main.feels_like);
+            this.conditions = this.titleCase(weather.weather[0].description);
+        },
+        titleCase(string) {
+            let words = string.split(' ');
+            let sentence = [];
+            words.forEach(word => {
+                let title = word[0].toUpperCase();
+                sentence.push(title + word.slice(1));
+            });
+            return sentence.join(' ');
         }
     },
     mounted() {
