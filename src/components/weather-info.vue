@@ -19,21 +19,22 @@ export default {
     },
     methods: {
         async getLocation() {
-            const request = await fetch(this.locUrl); 
-            const data = await request.text();
+            // const request = await fetch(this.locUrl); 
+            // const data = await request.text();
             // console.log(data);
-            this.coords = data;
-            // this.coords = '41.8500,-87.6500';
+            // this.coords = data;
+            this.coords = '41.8500,-87.6500';
         },
         async getWeather() {
-            let requestUrl = this.proxyUrl + this.weatherUrl + this.coords + this.weatherParams;
-
+            // let requestUrl = this.proxyUrl + this.weatherUrl + this.coords + this.weatherParams;
+            let requestUrl = this.weatherUrl + this.coords + this.weatherParams;
             const request = await fetch(requestUrl, {
                 headers: {
-                    "Origin": "startpage.cmurph.me"
+                    "origin": "startpage.cmurph.me",
                 }
             });
             const data = await request.json();
+            // console.log(await request.text());
             this.weather = data;
         }
     },

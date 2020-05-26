@@ -19,7 +19,7 @@ export default {
             searchUrl: 'https://www.google.com/search?q=',
             suggestions: [],
             activeSuggestion: -1,
-            urlRegex: /^(([\w-]+?:\/\/)?[\w-]+(\.?[\w-]+)+\.?(:\d+)?(\/\S*)?)$/,
+            urlRegex: /^(([\w-]+?:\/\/)?[\w-]+(\.?[\w-]+)+\.(:\d+)?(\/\S*)?)$/,
             protocolRegex: /^http(s):\/\//
         }
     },
