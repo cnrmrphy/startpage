@@ -27,7 +27,7 @@ export default {
             this.lat = parseInt(data.split(',')[0]).toFixed(2);
             this.lon = parseInt(data.split(',')[1]).toFixed(2); 
 
-            // /* offline get location */
+            /* offline get location */
             // const request = await fetch(this.apiUrl); 
             // const data = await request.json();
             // this.lat = parseInt(data.latitude).toFixed(2);

@@ -2,11 +2,12 @@
 <template>
     <div class="search-container">
         <input autofocus type="text" v-model="query" v-on:keyup.down="increaseActive" v-on:keyup.up="decreaseActive" v-on:click="toggleActive" v-on:keyup.enter="searchHandler">
-        <div class="suggestions" v-if="suggestions.length > 0">
-            <p v-for="suggestion in suggestions" v-bind:key="suggestion.id" 
-                v-bind:class="{activeSuggestion: suggestion.id == activeSuggestion, history: suggestion.type == 'history'}">
+        <div class="suggestions">
+            <p v-for="suggestion in suggestions" v-on:click="followSuggestion(suggestion.id)" v-bind:key="suggestion.id" 
+                v-bind:class="{'active-suggestion': suggestion.id == activeSuggestion, history: suggestion.type == 'history'}"
+                >
                 {{suggestion.phrase}}
-            </p>
+            </p> 
         </div>
     </div>
 </template>
@@ -76,6 +77,10 @@ export default {
             }
             this.query = '';
         },
+        followSuggestion(id){
+            this.activeSuggestion = id;
+            this.searchHandler();
+        },
         storeQuery (query) {
             let history = JSON.parse(localStorage.getItem('history'));
             if(history && history[query]){
@@ -110,43 +115,48 @@ export default {
                     }
                 });
             }
-
-            //TODO: sort historysuggestions by num in localhistory 
+            //todo: sort historysuggestions by num in localhistory 
         },
         async referenceApi () {
             this.apiSuggestions = [];
+            const suggUrl = this.acUrl + '?q=' + this.searchablequery;
+            try {
+                const res = await fetch(this.proxyUrl + suggUrl);
+                const data = await res.json();
 
-            const suggUrl = this.acUrl + '?q=' + this.searchableQuery;
-            const res = await fetch(this.proxyUrl + suggUrl);
-            const data = await res.json();
+                let id = this.historySuggestions.length;
+                data.forEach(element => {
+                    element.id = id;
+                    element.type = 'web';
+                    id++;
+                });
+                this.apiSuggestions = data.slice(0, this.numSuggestions - this.historySuggestions.length);
+            } catch(e) {
+                console.log(e);
+            }
 
-            let id = this.historySuggestions.length -1;
-            data.forEach(element => {
-                element.id = id;
-                id ++;
-                element['type'] = 'web';
-            });
-
-            this.apiSuggestions = data;
+            // console.log('local api suggestions data');
+            // console.log(this.apisuggestions);
         } 
     },
     computed: {
-        searchableQuery: function() {
+        searchablequery: function() {
             return this.query.split(' ').join('+');
         }
     },
     watch: {
-        query: function(){
+        query: async function(){
+            this.activeSuggestion = -1;
             this.referenceHistory();
-            this.referenceApi();
+            await this.referenceApi();
             this.suggestions = this.historySuggestions.concat(this.apiSuggestions);
         },
-        // TODO: maybe figure out how to implement something like this to fully replicate chrome's bar
+        // todo: maybe figure out how to implement something like this to fully replicate chrome's bar
         // right now the problem is that it activates the above and corrupts the current list by running the
         // api on each guy that it runs through 
-        // activeSuggestion: function(){
-        //     if(this.activeSuggestion >= 0){
-        //         this.query = this.suggestions[this.activeSuggestion].phrase;
+        // activesuggestion: function(){
+        //     if(this.activesuggestion >= 0){
+        //         this.query = this.suggestions[this.activesuggestion].phrase;
         //     }
         // }
     }
