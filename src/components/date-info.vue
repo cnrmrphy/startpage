@@ -1,7 +1,7 @@
 <template>
   <div>
-      <h1>{{timeString}}</h1>
-      <h2>{{dateString}}</h2>
+      <p id="time">{{timeString}}</p>
+      <p id="date">{{dateString}}</p>
   </div>
 </template>
 

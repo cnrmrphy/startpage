@@ -1,6 +1,6 @@
 <template>
     <div>
-        <p> {{ conditions }}–Feels like {{ temp }} F </p>
+        <p id="weather"> {{ conditions }}–Feels like {{ temp }} F </p>
     </div>
 </template>
 
@@ -22,16 +22,16 @@ export default {
     methods: {
         async getLocation() {
             /* deployed site get location */
-            const request = await fetch(this.locUrl);
-            const data = await request.text();
-            this.lat = parseInt(data.split(',')[0]).toFixed(2);
-            this.lon = parseInt(data.split(',')[1]).toFixed(2); 
+            // const request = await fetch(this.locUrl);
+            // const data = await request.text();
+            // this.lat = parseInt(data.split(',')[0]).toFixed(2);
+            // this.lon = parseInt(data.split(',')[1]).toFixed(2); 
 
             /* offline get location */
-            // const request = await fetch(this.apiUrl); 
-            // const data = await request.json();
-            // this.lat = parseInt(data.latitude).toFixed(2);
-            // this.lon = parseInt(data.longitude).toFixed(2);
+            const request = await fetch(this.apiUrl); 
+            const data = await request.json();
+            this.lat = parseInt(data.latitude).toFixed(2);
+            this.lon = parseInt(data.longitude).toFixed(2);
 
 
             this.getWeather();

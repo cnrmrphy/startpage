@@ -1,7 +1,7 @@
 /* eslint disable no-invalid-regexp */
 <template>
     <div class="search-container">
-        <input autofocus type="text" v-model="query" v-on:keyup.down="increaseActive" v-on:keyup.up="decreaseActive" v-on:click="toggleActive" v-on:keyup.enter="searchHandler">
+        <input autofocus type="text" placeholder="search" v-model="query" v-on:keyup.down="increaseActive" v-on:keyup.up="decreaseActive" v-on:click="toggleActive" v-on:keyup.enter="searchHandler">
         <div class="suggestions">
             <p v-for="suggestion in suggestions" v-on:click="followSuggestion(suggestion.id)" v-bind:key="suggestion.id" 
                 v-bind:class="{'active-suggestion': suggestion.id == activeSuggestion, history: suggestion.type == 'history'}"
@@ -83,11 +83,13 @@ export default {
         },
         storeQuery (query) {
             let history = JSON.parse(localStorage.getItem('history'));
+            let time = new Date();
+            time = time.getTime();
+
             if(history && history[query]){
                 history[query].num ++;
+                history[query].time = time;
             } else { 
-                let time = new Date();
-                time = time.getTime();
                 let options = {
                     'time': time,
                     'num': 1
@@ -105,7 +107,7 @@ export default {
             if(history){
                 let id = 0;
                 Object.keys(history).forEach(item => {
-                    if(item.toLowerCase().indexOf(this.query.toLowerCase()) != -1){
+                    if(item.toLowerCase().startsWith(this.query.toLowerCase())){
                         this.historySuggestions.push({
                             'phrase': item,
                             'id': id, 
@@ -119,10 +121,10 @@ export default {
         },
         async referenceApi () {
             this.apiSuggestions = [];
-            const suggUrl = this.acUrl + '?q=' + this.searchablequery;
+            const suggUrl = this.acUrl + '?q=' + this.searchableQuery;
             try {
                 const res = await fetch(this.proxyUrl + suggUrl);
-                const data = await res.json();
+                var data = await res.json();
 
                 let id = this.historySuggestions.length;
                 data.forEach(element => {
@@ -130,26 +132,29 @@ export default {
                     element.type = 'web';
                     id++;
                 });
+                //TODO: Filter data so that it does not contain duplicates with history suggestions
+                //somewhat difficult i guess because it's a dictionary
                 this.apiSuggestions = data.slice(0, this.numSuggestions - this.historySuggestions.length);
             } catch(e) {
                 console.log(e);
             }
-
-            // console.log('local api suggestions data');
-            // console.log(this.apisuggestions);
         } 
     },
     computed: {
-        searchablequery: function() {
+        searchableQuery: function() {
             return this.query.split(' ').join('+');
         }
     },
     watch: {
         query: async function(){
             this.activeSuggestion = -1;
-            this.referenceHistory();
-            await this.referenceApi();
-            this.suggestions = this.historySuggestions.concat(this.apiSuggestions);
+            if(this.query.length < 1){
+                this.suggestions = [];
+            } else {
+                this.referenceHistory();
+                await this.referenceApi();
+                this.suggestions = this.historySuggestions.concat(this.apiSuggestions);
+            }
         },
         // todo: maybe figure out how to implement something like this to fully replicate chrome's bar
         // right now the problem is that it activates the above and corrupts the current list by running the
@@ -164,19 +169,22 @@ export default {
 </script>
 
 <style scoped>
+    .search-container {
+        overflow-x:hidden;
+    }
     .active-suggestion {
-        color: blue;
-        font-size: 1.2em;
+        color: #bd93f9;
     }
-
+    .suggestions{
+        z-index: 1;
+        background-color: #282a36;
+        color: #50fa7b;
+    }
     input{
-        border-radius: 0;
-    }
-    input:focus{
-        outline: none;
-    }
-
-    .history {
-        background-color: beige;
+        outline:none;
+        border:none;
+        width: 100%;
+        line-height:3em;
+        padding-left:5%;
     }
 </style>

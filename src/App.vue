@@ -1,9 +1,11 @@
 <template>
   <div id="app">
-    <DateInfo />
-    <WeatherInfo />
-    <SearchBar />
-    <LinksWrapper v-bind:links="links"/>
+    <section id="frame1" class="frame">
+      <DateInfo />
+      <WeatherInfo />
+    </section>
+    <SearchBar id="frame2" class="frame"/>
+    <LinksWrapper id="frame3" class="frame" v-bind:links="links"/>
   </div>
 </template>
 
@@ -51,5 +53,26 @@ export default {
     margin: 0;
     padding: 0;
     font-family: Helvetica, Arial, sans-serif;
+  }
+  #app{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    text-align: center;
+  }
+  .frame{
+    border: 5px solid black;
+    margin: 20px;
+    padding: 20px;
+    width: 50%;
+  }
+  #frame1{
+    height: 200px;
+    background: url('../public/background.jpg');
+  }
+
+  #frame2{
+    padding: 0;
   }
 </style>
