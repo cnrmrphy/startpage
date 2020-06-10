@@ -1,8 +1,10 @@
 <template>
   <div id="app">
     <section id="frame1" class="frame">
-      <DateInfo />
-      <WeatherInfo />
+      <section id="inset" class="frame">
+        <DateInfo />
+        <WeatherInfo />
+      </section>
     </section>
     <SearchBar id="frame2" class="frame"/>
     <LinksWrapper id="frame3" class="frame" v-bind:links="links"/>
@@ -53,19 +55,26 @@ export default {
     margin: 0;
     padding: 0;
     font-family: Helvetica, Arial, sans-serif;
+    box-sizing:border-box;
   }
   #app{
     display: flex;
     justify-content: center;
     align-items: center;
     flex-direction: column;
-    text-align: center;
   }
   .frame{
     border: 5px solid black;
     margin: 15px;
     padding: 20px;
     width: 50%;
+  }
+  #inset{
+    margin:0;
+    padding:10px;
+    background:white;
+    float:right;
+    text-align:right;
   }
   #frame1{
     height: 200px;

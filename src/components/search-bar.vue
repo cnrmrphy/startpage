@@ -4,7 +4,7 @@
         <div class="text-container">
             <input autofocus type="text" placeholder="search" v-model="query" v-on:keyup.down="increaseActive" v-on:keyup.up="decreaseActive" v-on:click="toggleActive" v-on:keyup.enter="searchHandler">
         </div>
-        <div class="suggestions" v-bind:style="suggestions.length > 0 ? 'display:block' : 'display:none'">
+        <div class="suggestions" v-bind:style="suggestions.length > 0 ? 'display:block' : 'display:none'" v-clickoutside="closeSuggestions">
             <p v-for="suggestion in suggestions" v-on:click="followSuggestion(suggestion.id)" v-bind:key="suggestion.id" 
                 v-bind:class="{'active-suggestion': suggestion.id == activeSuggestion, history: suggestion.type == 'history'}"
                 >
@@ -15,6 +15,7 @@
 </template>
 
 <script>
+import clickoutside from '../directives/click-outside'
 export default {
     name: 'search-bar',
     data: function(){
@@ -141,6 +142,7 @@ export default {
                 console.log(e);
             }
         },
+        
     },
     computed: {
         searchableQuery: function() {
@@ -166,6 +168,9 @@ export default {
         //         this.query = this.suggestions[this.activesuggestion].phrase;
         //     }
         // }
+    },
+    directives: {
+        clickoutside: clickoutside
     }
 }
 </script>
@@ -186,10 +191,12 @@ export default {
         left: 50%;
         transform: translate(-50%, 0);
         width: 100%;
-        /* background-color: #282a36; */
         background-color: white;
-        /* color: #50fa7b; */
         border: 5px solid black;
+        box-sizing:content-box;
+    }
+    .suggestions p{
+        padding-left:5%;
     }
     input{
         outline:none;
