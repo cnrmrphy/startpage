@@ -63,7 +63,7 @@ export default {
   }
   .frame{
     border: 5px solid black;
-    margin: 20px;
+    margin: 15px;
     padding: 20px;
     width: 50%;
   }

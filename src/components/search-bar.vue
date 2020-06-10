@@ -1,8 +1,10 @@
 /* eslint disable no-invalid-regexp */
 <template>
     <div class="search-container">
-        <input autofocus type="text" placeholder="search" v-model="query" v-on:keyup.down="increaseActive" v-on:keyup.up="decreaseActive" v-on:click="toggleActive" v-on:keyup.enter="searchHandler">
-        <div class="suggestions">
+        <div class="text-container">
+            <input autofocus type="text" placeholder="search" v-model="query" v-on:keyup.down="increaseActive" v-on:keyup.up="decreaseActive" v-on:click="toggleActive" v-on:keyup.enter="searchHandler">
+        </div>
+        <div class="suggestions" v-bind:style="suggestions.length > 0 ? 'display:block' : 'display:none'">
             <p v-for="suggestion in suggestions" v-on:click="followSuggestion(suggestion.id)" v-bind:key="suggestion.id" 
                 v-bind:class="{'active-suggestion': suggestion.id == activeSuggestion, history: suggestion.type == 'history'}"
                 >
@@ -124,7 +126,7 @@ export default {
             const suggUrl = this.acUrl + '?q=' + this.searchableQuery;
             try {
                 const res = await fetch(this.proxyUrl + suggUrl);
-                var data = await res.json();
+                const data = await res.json();
 
                 let id = this.historySuggestions.length;
                 data.forEach(element => {
@@ -138,7 +140,7 @@ export default {
             } catch(e) {
                 console.log(e);
             }
-        } 
+        },
     },
     computed: {
         searchableQuery: function() {
@@ -170,15 +172,24 @@ export default {
 
 <style scoped>
     .search-container {
-        overflow-x:hidden;
+        position: relative;
+    }
+    .text-container {
+        overflow-x: hidden;
     }
     .active-suggestion {
         color: #bd93f9;
     }
     .suggestions{
         z-index: 1;
-        background-color: #282a36;
-        color: #50fa7b;
+        position: absolute;
+        left: 50%;
+        transform: translate(-50%, 0);
+        width: 100%;
+        /* background-color: #282a36; */
+        background-color: white;
+        /* color: #50fa7b; */
+        border: 5px solid black;
     }
     input{
         outline:none;
