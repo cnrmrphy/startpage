@@ -146,7 +146,6 @@ export default {
             }
         },
         hideList() {
-            console.log('gonna hide the brother now');
             this.showList = false;
         }
         
