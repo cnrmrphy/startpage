@@ -1,10 +1,12 @@
 /* eslint disable no-invalid-regexp */
 <template>
-    <div class="search-container">
+    <div class="search-container" v-on-clickaway="hideList">
         <div class="text-container">
-            <input autofocus type="text" placeholder="search" v-model="query" v-on:keyup.down="increaseActive" v-on:keyup.up="decreaseActive" v-on:click="toggleActive" v-on:keyup.enter="searchHandler">
+            <input id="omnibox" autofocus type="text" placeholder="search" v-model="query" 
+                v-on:keyup.down="increaseActive" v-on:keyup.up="decreaseActive" v-on:click="resetActive" v-on:keyup.enter="searchHandler"
+                >
         </div>
-        <div class="suggestions" v-bind:style="suggestions.length > 0 ? 'display:block' : 'display:none'" v-clickoutside="closeSuggestions">
+        <div class="suggestions" v-if="showList" v-bind:style="suggestions.length > 0 ? 'display:block' : 'display:none'">
             <p v-for="suggestion in suggestions" v-on:click="followSuggestion(suggestion.id)" v-bind:key="suggestion.id" 
                 v-bind:class="{'active-suggestion': suggestion.id == activeSuggestion, history: suggestion.type == 'history'}"
                 >
@@ -15,7 +17,7 @@
 </template>
 
 <script>
-import clickoutside from '../directives/click-outside'
+import { directive as onClickaway } from 'vue-clickaway';
 export default {
     name: 'search-bar',
     data: function(){
@@ -30,7 +32,8 @@ export default {
             activeSuggestion: -1,
             numSuggestions: 8,
             urlRegex: /^(([\w-]+?:\/\/)?[\w-]+(\.[\w-]+)+\.?(:\d+)?(\/\S*)?)$/,
-            protocolRegex: /^http(s):\/\//
+            protocolRegex: /^http(s):\/\//,
+            showList: true,
         }
     },
     methods: {
@@ -50,7 +53,7 @@ export default {
                 this.activeSuggestion = 0;
             }
         },
-        toggleActive () {
+        resetActive () {
             if(this.activeSuggestion >= 0){
                 this.activeSuggestion = -1;
             }
@@ -142,6 +145,10 @@ export default {
                 console.log(e);
             }
         },
+        hideList() {
+            console.log('gonna hide the brother now');
+            this.showList = false;
+        }
         
     },
     computed: {
@@ -151,6 +158,7 @@ export default {
     },
     watch: {
         query: async function(){
+            // this.paddedQuery = '';
             this.activeSuggestion = -1;
             if(this.query.length < 1){
                 this.suggestions = [];
@@ -159,18 +167,22 @@ export default {
                 await this.referenceApi();
                 this.suggestions = this.historySuggestions.concat(this.apiSuggestions);
             }
+            // if(this.suggestions.length > 0){
+                // this.paddedQuery = this.suggestions[0].phrase;
+            // }
+            this.showList = true;
         },
         // todo: maybe figure out how to implement something like this to fully replicate chrome's bar
         // right now the problem is that it activates the above and corrupts the current list by running the
         // api on each guy that it runs through 
-        // activesuggestion: function(){
-        //     if(this.activesuggestion >= 0){
-        //         this.query = this.suggestions[this.activesuggestion].phrase;
-        //     }
+        // activeSuggestion: function(){
+        //     // if(this.activeSggestion >= 0){
+        //         document.getElementById('omnibox').value = this.suggestions[this.activeSuggestion].phrase;
+        //     // }
         // }
     },
     directives: {
-        clickoutside: clickoutside
+        onClickaway,
     }
 }
 </script>
