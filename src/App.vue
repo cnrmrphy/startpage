@@ -1,13 +1,15 @@
 <template>
-  <div id="app">
-    <section id="frame1" class="frame">
-      <section id="inset" class="frame">
-        <DateInfo />
-        <WeatherInfo />
+  <div id="wrapper" v-bind:style="{height: calcHeight}">
+    <div id="app">
+      <section id="frame1" class="frame">
+        <section id="inset" class="frame">
+          <DateInfo />
+          <WeatherInfo />
+        </section>
       </section>
-    </section>
-    <SearchBar id="frame2" class="frame"/>
-    <LinksWrapper id="frame3" class="frame" v-bind:links="links"/>
+      <SearchBar id="frame2" class="frame"/>
+      <LinksWrapper id="frame3" class="frame" v-bind:links="links"/>
+    </div>
   </div>
 </template>
 
@@ -40,6 +42,21 @@ export default {
     };
   },
   computed: {
+    calcHeight() {
+      if(window.outerHeight != screen.availHeight){
+        return '100%';
+      } else {
+        const totalHeight = screen.availHeight;
+        console.log('total size of monitor: ' + totalHeight);
+        const windowHeight = window.innerHeight;
+        console.log('size of available browser space: ' + windowHeight);
+        const taskBar = totalHeight - windowHeight;
+        console.log('size of the browser top taskbar: ' + taskBar);
+        const paddedHeight = windowHeight - taskBar;
+        console.log('padded maximum size of the window: ' + paddedHeight);
+        return paddedHeight + 'px';
+      }
+    }
   },
   components: {
     LinksWrapper,
@@ -59,22 +76,25 @@ export default {
   }
   #app{
     display: flex;
-    justify-content: center;
-    align-items: center;
     flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
   }
   .frame{
     border: 5px solid black;
     margin: 15px;
     padding: 20px;
     width: 50%;
+    background-color:white;
   }
   #inset{
     margin:0;
     padding:10px;
-    background:white;
+    background-color:white;
     float:right;
     text-align:right;
+    line-height:1.4;
   }
   #frame1{
     height: 200px;
